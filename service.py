@@ -1,3 +1,6 @@
+"""Computation utilities: running-sum total and average helpers."""
+
+
 def calculate_total(numbers):
     total = 0
 
