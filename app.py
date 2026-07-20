@@ -3,7 +3,7 @@ from service import calculate_total
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=None)
 
     @app.route("/")
     def index():
