@@ -4,13 +4,14 @@ This module wires the reusable :func:`service.calculate_total` helper to a tiny
 command-line demonstration. When executed directly it computes the sum of a
 fixed list of numbers, prints the total, echoes each number, and prints a
 completion message. It defines no classes, constants, or module-level state
-beyond the ``main`` function and the standard ``__main__`` guard. This file is
-byte-identical to the parent repository's ``app.py``.
+beyond the ``main`` function and the standard ``__main__`` guard. Its
+non-docstring executable implementation mirrors the parent repository's
+``app.py`` (the repository-specific docstrings differ).
 
 Note:
     Only :func:`service.calculate_total` is imported here;
     :func:`service.calculate_average` is defined in ``service.py`` but is not
-    used by this application (documented in the README's Known Limitations).
+    used by this application.
 
 Usage:
     python app.py

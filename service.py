@@ -1,14 +1,16 @@
 """Arithmetic helper functions for the child submodule application.
 
-This module provides two dependency-free, standard-library-only helpers used by
-``app.py`` to demonstrate a simple modular computation: summation and averaging
-of a list of numbers. It performs no I/O, defines no classes or module-level
-state, and imports nothing. It is byte-identical to the parent repository's
-``service.py`` (see the Known Limitations section of ``ChildRepo/README.md``).
+This module defines two dependency-free, standard-library-only helpers:
+``calculate_total`` (summation) and ``calculate_average`` (averaging) of a list
+of numbers. The companion ``app.py`` imports and calls only ``calculate_total``;
+``calculate_average`` is a provided-but-currently-unused part of the public API.
+The module performs no I/O, defines no classes or module-level state, and
+imports nothing. Its non-docstring executable implementation mirrors the parent
+repository's ``service.py`` (the repository-specific docstrings differ).
 
 Public API:
-    * ``calculate_total(numbers)`` -- return the arithmetic sum of a list.
-    * ``calculate_average(numbers)`` -- return the arithmetic mean of a list.
+    * ``calculate_total(numbers)`` — return the arithmetic sum of a list.
+    * ``calculate_average(numbers)`` — return the arithmetic mean of a list.
 
 Source: ChildRepo/service.py:L1-L14
 """
