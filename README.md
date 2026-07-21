@@ -247,13 +247,16 @@ Application completed
   executing `python3 app.py` in the `NestedChild` directory on Python 3.13.7,
   which fails at import time with empty standard output.
 
-  The exact trailing parenthetical of the message is CPython-version-dependent,
-  so only the single canonical, portable form (no absolute path) is published
-  here:
+  On Python 3.13.7 the exact message (absolute path elided as `<path>`) is:
 
   ```text
-  ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import)
+  ImportError: cannot import name 'calculate_total' from 'service' (consider renaming '<path>/service.py' if it has the same name as a library you intended to import)
   ```
+
+  The exact trailing parenthetical is CPython-version-dependent: Python 3.13.x
+  emits the "consider renaming …" hint shown above, while other CPython versions
+  emit the classic `... from partially initialized module 'service' (most likely
+  due to a circular import)` form.
 
   This is a **documentation-only** task, so the defect is recorded rather than
   repaired. Full documentation of this issue — including the complete failure
