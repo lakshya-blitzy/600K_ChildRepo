@@ -229,36 +229,38 @@ Application completed
 
 - **Nested submodule circular `ImportError` (documented as-is, not fixed).**
   In the nested submodule, `ChildRepo/NestedChild/service.py` and
-  `ChildRepo/NestedChild/app.py` were **byte-for-byte identical before
-  documentation was added**; adding docstrings and comments has since made the
-  two files differ textually, but their non-documentation statements and
-  control flow remain equivalent. Because of that original duplication,
-  `service.py` defines `main()` and imports `calculate_total` from `service`
-  instead of *defining* `calculate_total` / `calculate_average`. Since
-  `service.py` ends up importing a name from itself, running
-  `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError` at
-  runtime and exits with a non-zero status (exit code 1).
+  `ChildRepo/NestedChild/app.py` were **byte-for-byte identical at the
+  pre-documentation baseline** — the nested repository's original
+  `Create app.py` and `Create service.py` commits, before any docstrings or
+  comments were added (established by comparing the two files' contents at that
+  baseline revision, where they shared an identical checksum). Adding docstrings
+  and comments during this documentation task has since made the two files differ
+  textually, but their non-documentation statements and control flow remain
+  equivalent. Because of that original duplication, `service.py` defines `main()`
+  (`Source: ChildRepo/NestedChild/service.py:L43`) and imports `calculate_total`
+  from `service` (`Source: ChildRepo/NestedChild/service.py:L41`) instead of
+  *defining* `calculate_total` / `calculate_average`. Since `service.py` ends up
+  importing a name from itself — the same `from service import calculate_total`
+  statement that `app.py` uses (`Source: ChildRepo/NestedChild/app.py:L44`) —
+  running `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError`
+  at runtime and exits with a non-zero status (exit code 1). This is verified by
+  executing `python3 app.py` in the `NestedChild` directory on Python 3.13.7,
+  which fails at import time with empty standard output.
 
-  The exact message text is CPython-version-dependent, so it is documented in
-  two forms (the absolute file path is shown as `<path>` and is intentionally
-  elided). Canonical / normalized form (matches older CPython releases):
+  The exact trailing parenthetical of the message is CPython-version-dependent,
+  so only the single canonical, portable form (no absolute path) is published
+  here:
 
   ```text
   ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import)
   ```
 
-  Python 3.13 form (emitted by the default runtime used here):
-
-  ```text
-  ImportError: cannot import name 'calculate_total' from 'service' (consider renaming '<path>' if it has the same name as a library you intended to import)
-  ```
-
   This is a **documentation-only** task, so the defect is recorded rather than
-  repaired. In-depth documentation of this issue will live in the `NestedChild`
-  submodule's own README, which is **pending** and has not yet been authored at
-  this checkpoint; the navigation link to it is provided above in
-  [Submodule Composition](#submodule-composition)
-  ([NestedChild](NestedChild/README.md)).
+  repaired. Full documentation of this issue — including the complete failure
+  path and the canonical error message — lives in the `NestedChild` submodule's
+  own **completed** README at
+  [NestedChild/README.md](NestedChild/README.md), also linked above in
+  [Submodule Composition](#submodule-composition).
 
 - **`ChildRepo` itself runs correctly.** By contrast with the nested
   submodule, this repository's own `app.py` and `service.py` execute without
