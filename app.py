@@ -26,7 +26,7 @@ def main():
     Returns:
         None: results are written to standard output.
 
-    Source: ChildRepo/app.py:L3
+    Source: ChildRepo/app.py:L16
     """
     numbers = [10, 20, 30, 40]
 
