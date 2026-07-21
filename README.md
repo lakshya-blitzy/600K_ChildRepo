@@ -9,21 +9,23 @@ value.
 
 This repository is the **middle level** of a two-level Git submodule tree:
 
-```
+```text
 600K_ParentRepo  →  ChildRepo  →  NestedChild
 ```
 
-It is consumed as a submodule by the parent repository (`600K_ParentRepo`) and,
-in turn, embeds its own nested submodule, `NestedChild`
-(`Source: ChildRepo/.gitmodules`). The repository deliberately mirrors the
+It is consumed as a submodule by the parent repository (`600K_ParentRepo`)
+(`Source: .gitmodules` — the parent repository's `.gitmodules`, which declares
+the parent → `ChildRepo` edge) and, in turn, embeds its own nested submodule,
+`NestedChild` (`Source: ChildRepo/.gitmodules`, which declares the
+`ChildRepo` → `NestedChild` edge). The repository deliberately mirrors the
 parent repository's shape — the same two-file `app.py` / `service.py` layout —
 so a reader moving between the parent, this child, and the nested repository
 encounters a consistent structure.
 
 - **Language:** Python 3.6+ (standard library only — no third-party
   dependencies; `Source: ChildRepo/service.py`, which has no imports).
-- **Entry point:** `app.py` (`Source: ChildRepo/app.py:L3`).
-- **Computation module:** `service.py` (`Source: ChildRepo/service.py:L1`).
+- **Entry point:** `app.py` (`Source: ChildRepo/app.py:L16`).
+- **Computation module:** `service.py` (`Source: ChildRepo/service.py:L18`).
 
 > This is a **documentation-only** description of the code exactly as it exists
 > today. No program logic is changed, and known defects (see
@@ -102,7 +104,7 @@ repository, making it the middle tier of the parent → `ChildRepo` →
 
 This repository exposes three functions across two modules. `app.py` imports
 `calculate_total` from the local `service` module
-(`Source: ChildRepo/app.py:L1`) and orchestrates the run via `main()`;
+(`Source: ChildRepo/app.py:L14`) and orchestrates the run via `main()`;
 `service.py` provides the pure numeric helpers.
 
 The execution flow of `main()` is:
@@ -118,7 +120,7 @@ flowchart LR
 ### `calculate_total(numbers)`
 
 Iteratively sums the elements of a numeric iterable
-(`Source: ChildRepo/service.py:L1`).
+(`Source: ChildRepo/service.py:L18`).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -139,7 +141,7 @@ calculate_total([])                # -> 0
 ### `calculate_average(numbers)`
 
 Computes the arithmetic mean of a numeric iterable
-(`Source: ChildRepo/service.py:L10`).
+(`Source: ChildRepo/service.py:L44`).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -153,7 +155,7 @@ by zero.
 `len(numbers)`.
 
 > **Note:** `calculate_average` is **defined but never invoked** anywhere in
-> the project (`Source: ChildRepo/service.py:L10`). It is documented here for
+> the project (`Source: ChildRepo/service.py:L44`). It is documented here for
 > completeness and full API coverage.
 
 ```python
@@ -164,7 +166,7 @@ calculate_average([])                # -> 0
 ### `main()`
 
 Application entry point that sums a hard-coded list and prints the results
-(`Source: ChildRepo/app.py:L3`).
+(`Source: ChildRepo/app.py:L16`).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -193,7 +195,7 @@ python app.py
 > On systems where `python` resolves to Python 2, use `python3 app.py`. The
 > program targets Python 3.6+.
 
-Expected standard output (`Source: ChildRepo/app.py:L3`):
+Expected standard output (`Source: ChildRepo/app.py:L16`):
 
 ```text
 Total: 100
@@ -206,40 +208,56 @@ Application completed
 
 ## Inline Code Explanations
 
-- **Accumulation / summation loop (`Source: ChildRepo/service.py:L4-L5`).**
-  Inside `calculate_total`, a `for number in numbers:` loop (line L4) adds each
-  element into a running `total` with `total += number` (line L5). This single
+- **Accumulation / summation loop (`Source: ChildRepo/service.py:L38-L39`).**
+  Inside `calculate_total`, a `for number in numbers:` loop (line L38) adds each
+  element into a running `total` with `total += number` (line L39). This single
   pass is the core of the summation; the function returns the accumulated
   `total` afterward.
 
-- **`if __name__ == "__main__":` guard (`Source: ChildRepo/app.py:L15`).**
+- **`if __name__ == "__main__":` guard (`Source: ChildRepo/app.py:L47-L48`).**
   At the bottom of `app.py`, this guard calls `main()` **only** when the module
   is executed directly (for example, `python app.py`). When `app.py` is
   imported by another module, `main()` does not run, so importing the module
   produces no side effects.
 
 - **`calculate_average` is defined but never called
-  (`Source: ChildRepo/service.py:L10`).** The function is fully implemented and
+  (`Source: ChildRepo/service.py:L44`).** The function is fully implemented and
   documented, but no code path in this repository invokes it (AAP §1.2.2). It
   is retained and documented here for API completeness.
 
 ## Known Issues
 
 - **Nested submodule circular `ImportError` (documented as-is, not fixed).**
-  In the nested submodule, `ChildRepo/NestedChild/service.py` is a
-  **byte-for-byte duplicate** of `ChildRepo/NestedChild/app.py`: it defines
-  `main()` and imports `calculate_total` from `service` instead of *defining*
-  `calculate_total` / `calculate_average`. Because `service.py` ends up
-  importing a name from itself, running `ChildRepo/NestedChild/app.py` raises a
-  circular-import error at runtime:
+  In the nested submodule, `ChildRepo/NestedChild/service.py` and
+  `ChildRepo/NestedChild/app.py` were **byte-for-byte identical before
+  documentation was added**; adding docstrings and comments has since made the
+  two files differ textually, but their non-documentation statements and
+  control flow remain equivalent. Because of that original duplication,
+  `service.py` defines `main()` and imports `calculate_total` from `service`
+  instead of *defining* `calculate_total` / `calculate_average`. Since
+  `service.py` ends up importing a name from itself, running
+  `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError` at
+  runtime and exits with a non-zero status (exit code 1).
+
+  The exact message text is CPython-version-dependent, so it is documented in
+  two forms (the absolute file path is shown as `<path>` and is intentionally
+  elided). Canonical / normalized form (matches older CPython releases):
 
   ```text
   ImportError: cannot import name 'calculate_total' from partially initialized module 'service' (most likely due to a circular import)
   ```
 
+  Python 3.13 form (emitted by the default runtime used here):
+
+  ```text
+  ImportError: cannot import name 'calculate_total' from 'service' (consider renaming '<path>' if it has the same name as a library you intended to import)
+  ```
+
   This is a **documentation-only** task, so the defect is recorded rather than
-  repaired. The `NestedChild` README covers this issue in depth — see the
-  [Submodule Composition](#submodule-composition) navigation link above
+  repaired. In-depth documentation of this issue will live in the `NestedChild`
+  submodule's own README, which is **pending** and has not yet been authored at
+  this checkpoint; the navigation link to it is provided above in
+  [Submodule Composition](#submodule-composition)
   ([NestedChild](NestedChild/README.md)).
 
 - **`ChildRepo` itself runs correctly.** By contrast with the nested
