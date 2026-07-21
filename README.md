@@ -23,6 +23,8 @@ parent repository includes it as a submodule, and it embeds `NestedChild` as its
 own nested submodule. The diagram below also records the runtime defect at the
 nested level (documented, not fixed — see
 [Known Limitations / Troubleshooting](#known-limitations--troubleshooting)).
+`Source: .gitmodules`, `Source: ChildRepo/.gitmodules`,
+`Source: ChildRepo/NestedChild/service.py:L1-L16`.
 
 ```mermaid
 graph TD
@@ -75,6 +77,13 @@ repository, see [`../README.md`](../README.md).
 | Git (submodule-aware) | Needed to clone and initialize the nested submodule repository. `Source: Git SCM documentation, "Git Tools - Submodules" (https://git-scm.com/book/en/v2/Git-Tools-Submodules)` |
 | Third-party packages  | **None.** The project uses only the Python standard library; the repository tree contains no dependency manifest (no `requirements.txt`, `pyproject.toml`, or `setup.py`). `Source: repository file tree (see [Repository Structure](#repository-structure))` |
 
+> **Verified interpreter:** The example output shown in
+> [Usage / Running](#usage--running) was **verified on CPython 3.12.3**, the
+> reference runtime pinned by the project's dependency inventory. Any Python
+> **>= 3.6** satisfies the only language feature used — the f-string in
+> `main()`. `Source: ChildRepo/app.py:L8`;
+> `Source: verified runtime — CPython 3.12.3 (running "python app.py" prints "Total: 100", exit code 0)`.
+
 ---
 
 ## Setup / Installation
@@ -108,6 +117,7 @@ git submodule update --init --recursive
 
 The child submodule exposes three functions across two modules. All signatures,
 parameters, and return values below are transcribed directly from the source.
+`Source: ChildRepo/service.py:L1-L14`, `Source: ChildRepo/app.py:L1-L16`.
 
 | Function            | Signature                     | Returns                                                                    |
 |---------------------|-------------------------------|----------------------------------------------------------------------------|
@@ -258,8 +268,11 @@ flowchart LR
 ## Deployment Guide
 
 There is **no build or packaging system** for this project — no compilation
-step, no bundler, and no package manifest; the repository tree contains only the
-two Python modules and this README.
+step, no bundler, and no package manifest. The **executable application**
+consists of the two Python modules (`app.py` and `service.py`) and has no build
+or package manifest; the wider repository tree additionally holds this README,
+the `NestedChild/` nested submodule, and version-control/ignored files that are
+not part of the runnable program.
 `Source: repository file tree (see [Repository Structure](#repository-structure))`.
 Deployment reduces to:
 

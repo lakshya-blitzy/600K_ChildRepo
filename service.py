@@ -4,9 +4,11 @@ This module defines two dependency-free, standard-library-only helpers:
 ``calculate_total`` (summation) and ``calculate_average`` (averaging) of a list
 of numbers. The companion ``app.py`` imports and calls only ``calculate_total``;
 ``calculate_average`` is a provided-but-currently-unused part of the public API.
+`Source: ChildRepo/app.py:L1-L16`.
 The module performs no I/O, defines no classes or module-level state, and
 imports nothing. Its non-docstring executable implementation mirrors the parent
 repository's ``service.py`` (the repository-specific docstrings differ).
+`Source: service.py:L1-L14`.
 
 Public API:
     * ``calculate_total(numbers)`` — return the arithmetic sum of a list.

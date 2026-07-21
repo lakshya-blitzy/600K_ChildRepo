@@ -6,12 +6,12 @@ fixed list of numbers, prints the total, echoes each number, and prints a
 completion message. It defines no classes, constants, or module-level state
 beyond the ``main`` function and the standard ``__main__`` guard. Its
 non-docstring executable implementation mirrors the parent repository's
-``app.py`` (the repository-specific docstrings differ).
+``app.py`` (the repository-specific docstrings differ). `Source: app.py:L1-L16`.
 
 Note:
     Only :func:`service.calculate_total` is imported here;
     :func:`service.calculate_average` is defined in ``service.py`` but is not
-    used by this application.
+    used by this application. `Source: ChildRepo/service.py:L10-L14`.
 
 Usage:
     python app.py
