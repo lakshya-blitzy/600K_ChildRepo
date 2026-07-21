@@ -4,7 +4,7 @@ This module provides pure, standard-library-only helper functions for simple
 numeric aggregation. It exposes two functions:
 
 * ``calculate_total`` -- iteratively sum a numeric iterable.
-* ``calculate_average`` -- compute the arithmetic mean of a numeric iterable.
+* ``calculate_average`` -- compute the arithmetic mean of a sized numeric collection.
 
 The module has no imports, no classes, and no module-level state. Every
 function is side-effect free: none performs I/O and none mutates its input,
@@ -42,22 +42,33 @@ def calculate_total(numbers):
 
 
 def calculate_average(numbers):
-    """Compute the arithmetic mean of a numeric iterable.
+    """Compute the arithmetic mean of a sized numeric collection.
 
     Delegates summation to :func:`calculate_total` and divides the total by
-    the number of elements. Division by zero is guarded by returning ``0``
-    when the input is empty or otherwise falsey.
+    the number of elements. Because the mean is computed as
+    ``total / len(numbers)``, ``numbers`` must be a *sized* collection (for
+    example a ``list`` or ``tuple``); unsized iterables such as generators are
+    not supported. Division by zero is guarded by returning ``0`` when the
+    input is empty or otherwise falsey.
 
     Note:
         This function is defined but never invoked anywhere in the project
         (AAP §1.2.2); it is documented here for completeness and API coverage.
 
     Args:
-        numbers (list[int | float]): The numeric values to average.
+        numbers (list[int | float]): The numeric values to average. Must be a
+            *sized* sequence/collection (for example a ``list`` or ``tuple``),
+            because the average is computed as ``total / len(numbers)`` and
+            ``len()`` is called on it; unsized iterables such as generators are
+            not supported.
 
     Returns:
         int | float: The average (total divided by count). Returns ``0`` for
         empty/falsey input to avoid division by zero.
+
+    Raises:
+        TypeError: If ``numbers`` is an unsized iterable (for example a
+            generator), because ``len(numbers)`` is evaluated.
 
     Source: ChildRepo/service.py:L44
     """

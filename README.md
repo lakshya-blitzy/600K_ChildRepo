@@ -46,7 +46,7 @@ encounters a consistent structure.
 
 | Requirement | Details |
 |-------------|---------|
-| Python | **3.6+** (verified with Python 3.12.3). The code uses only f-strings and basic control flow, so any modern CPython 3.x works. |
+| Python | **3.6+** (verified by executing `python3 app.py` on Python 3.13.7 in this environment). The code uses only f-strings and basic control flow, so any modern CPython 3.x works. |
 | Git | Required to clone the repository and fetch its nested submodule recursively. |
 | Third-party packages | **None.** The project depends solely on the Python standard library (`Source: ChildRepo/service.py`, no imports; `ChildRepo/app.py` imports only the intra-repository `service` module). |
 
@@ -140,19 +140,21 @@ calculate_total([])                # -> 0
 
 ### `calculate_average(numbers)`
 
-Computes the arithmetic mean of a numeric iterable
-(`Source: ChildRepo/service.py:L44`).
+Computes the arithmetic mean of a sized numeric collection such as a list or
+tuple (`Source: ChildRepo/service.py:L44`).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `numbers` | list of int/float (numeric iterable) | Values to average. |
+| `numbers` | list/tuple of int/float (a *sized* collection) | Values to average. Must support `len()`; unsized iterables such as generators are not supported. |
 
 **Returns:** `int` / `float` — the total divided by the number of elements.
 Returns `0` for empty or otherwise falsey input, which guards against division
 by zero.
 
 **Behavior:** delegates summation to `calculate_total` and divides by
-`len(numbers)`.
+`len(numbers)`. Because it calls `len(numbers)`, the input must be a sized
+collection (for example a `list` or `tuple`); passing an unsized iterable such
+as a generator raises `TypeError`.
 
 > **Note:** `calculate_average` is **defined but never invoked** anywhere in
 > the project (`Source: ChildRepo/service.py:L44`). It is documented here for
@@ -237,11 +239,11 @@ Application completed
   and comments during this documentation task has since made the two files differ
   textually, but their non-documentation statements and control flow remain
   equivalent. Because of that original duplication, `service.py` defines `main()`
-  (`Source: ChildRepo/NestedChild/service.py:L43`) and imports `calculate_total`
-  from `service` (`Source: ChildRepo/NestedChild/service.py:L41`) instead of
+  (`Source: ChildRepo/NestedChild/service.py:L47`) and imports `calculate_total`
+  from `service` (`Source: ChildRepo/NestedChild/service.py:L45`) instead of
   *defining* `calculate_total` / `calculate_average`. Since `service.py` ends up
   importing a name from itself — the same `from service import calculate_total`
-  statement that `app.py` uses (`Source: ChildRepo/NestedChild/app.py:L44`) —
+  statement that `app.py` uses (`Source: ChildRepo/NestedChild/app.py:L48`) —
   running `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError`
   at runtime and exits with a non-zero status (exit code 1). This is verified by
   executing `python3 app.py` in the `NestedChild` directory on Python 3.13.7,
