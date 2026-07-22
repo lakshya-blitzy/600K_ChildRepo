@@ -260,8 +260,10 @@ calculate_average([10, 20, 30, 40])  # -> 25.0
 calculate_average([])                # -> 0  (empty/falsey input guard)
 ```
 
-> **Note:** `calculate_average` is **defined but never invoked** anywhere in the
-> project [Source: ChildRepo/service.py:L44]; it is shown here for completeness,
+> **Note:** `calculate_average` is **defined but never invoked by the
+> application/runtime code** anywhere in the project
+> [Source: ChildRepo/service.py:L44]; the example calls shown just above are
+> illustrative documentation only. It is shown here for completeness,
 > consistent with the [API Documentation](#api-documentation) and
 > [Inline Code Explanations](#inline-code-explanations) sections.
 
@@ -333,11 +335,11 @@ Application completed
   and comments during this documentation task has since made the two files differ
   textually, but their non-documentation statements and control flow remain
   equivalent. Because of that original duplication, `service.py` defines `main()`
-  (`Source: ChildRepo/NestedChild/service.py:L47`) and imports `calculate_total`
-  from `service` (`Source: ChildRepo/NestedChild/service.py:L45`) instead of
+  (`Source: ChildRepo/NestedChild/service.py:L57`) and imports `calculate_total`
+  from `service` (`Source: ChildRepo/NestedChild/service.py:L55`) instead of
   *defining* `calculate_total` / `calculate_average`. Since `service.py` ends up
   importing a name from itself — the same `from service import calculate_total`
-  statement that `app.py` uses (`Source: ChildRepo/NestedChild/app.py:L48`) —
+  statement that `app.py` uses (`Source: ChildRepo/NestedChild/app.py:L46`) —
   running `ChildRepo/NestedChild/app.py` raises a circular-import `ImportError`
   at runtime and exits with a non-zero status (exit code 1). This is verified by
   executing `python3 app.py` in the `NestedChild` directory on Python 3.13.7,
