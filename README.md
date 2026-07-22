@@ -36,8 +36,10 @@ encounters a consistent structure.
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Setup and Installation](#setup-and-installation)
+- [Project Structure](#project-structure)
 - [Submodule Composition](#submodule-composition)
 - [API Documentation](#api-documentation)
+- [Usage Examples](#usage-examples)
 - [Deployment and How to Run](#deployment-and-how-to-run)
 - [Inline Code Explanations](#inline-code-explanations)
 - [Known Issues](#known-issues)
@@ -78,6 +80,25 @@ repository's files will be missing.
 > personal access token in a URL that is committed or shared. The submodule URL
 > recorded in `ChildRepo/.gitmodules` is the clean, token-free form shown in
 > [Submodule Composition](#submodule-composition).
+
+## Project Structure
+
+`ChildRepo` follows the same minimal two-file layout used throughout the tree —
+an `app.py` entry point paired with a `service.py` computation module — beside
+this `README.md` and the embedded `NestedChild` Git submodule
+[Source: ChildRepo/.gitmodules]. The concrete on-disk layout is:
+
+```text
+ChildRepo/
+├── README.md      # this document
+├── app.py         # entry point; defines main()  [Source: ChildRepo/app.py:L16]
+├── service.py     # calculate_total / calculate_average  [Source: ChildRepo/service.py:L18, ChildRepo/service.py:L44]
+└── NestedChild/   # Git submodule (leaf of the tree)  [Source: ChildRepo/.gitmodules]
+```
+
+The detailed submodule graph and the nested repository's remote URL are covered
+in the adjacent [Submodule Composition](#submodule-composition) section that
+follows.
 
 ## Submodule Composition
 
@@ -182,6 +203,79 @@ and finally prints `Application completed`.
 
 ```python
 main()  # prints: "Total: 100", then 10, 20, 30, 40, then "Application completed"
+```
+
+## Usage Examples
+
+The runnable examples below are gathered from the API and run instructions in
+this document and are labeled explicitly for convenience. Every command and its
+output is real and verified on Python 3.13.x — the `ChildRepo` program exits
+with status code 0 [Source: ChildRepo/app.py:L16].
+
+### Running the application
+
+Run the entry-point script directly from inside the `ChildRepo` directory:
+
+```bash
+python app.py
+```
+
+Verified standard output (exit code 0) [Source: ChildRepo/app.py:L16]:
+
+```text
+Total: 100
+10
+20
+30
+40
+Application completed
+```
+
+> On systems where `python` resolves to Python 2, use `python3 app.py`. The
+> program targets Python 3.6+.
+
+### Library usage of `calculate_total`
+
+Import the helper from the local `service` module and call it directly with any
+numeric list; it returns `0` for an empty iterable
+[Source: ChildRepo/service.py:L18]:
+
+```python
+from service import calculate_total
+
+calculate_total([10, 20, 30, 40])  # -> 100
+calculate_total([])                # -> 0  (summing zero elements)
+```
+
+### Library usage of `calculate_average`
+
+`calculate_average` computes the arithmetic mean of a sized collection and
+guards against division by zero by returning `0` for empty input
+[Source: ChildRepo/service.py:L44]:
+
+```python
+from service import calculate_average
+
+calculate_average([10, 20, 30, 40])  # -> 25.0
+calculate_average([])                # -> 0  (empty/falsey input guard)
+```
+
+> **Note:** `calculate_average` is **defined but never invoked** anywhere in the
+> project [Source: ChildRepo/service.py:L44]; it is shown here for completeness,
+> consistent with the [API Documentation](#api-documentation) and
+> [Inline Code Explanations](#inline-code-explanations) sections.
+
+### Programmatic entry point
+
+`main()` can also be invoked programmatically after importing it from the `app`
+module; it prints the same sequence shown under
+[Running the application](#running-the-application) above
+[Source: ChildRepo/app.py:L16]:
+
+```python
+from app import main
+
+main()  # prints "Total: 100", then 10, 20, 30, 40, then "Application completed"
 ```
 
 ## Deployment and How to Run
